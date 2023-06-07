@@ -48,8 +48,24 @@ class Solution:
 ```
 ```python
 # ways 2: 迭代
-
-
+from collections import deque
+class Solution:
+    def findBottomLeftValue(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
+        queue = deque()
+        queue.append(root)
+        while queue:
+            size = len(queue)
+            for i in range(size):
+                node = queue.popleft()
+                if i == 0:
+                    result = node.val
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return result
 ```
 
 
