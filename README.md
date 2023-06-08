@@ -1,6 +1,6 @@
 # Leetcode-Python16
 
-## 513. Find Bottom Left Tree Value
+## 513. Find Bottom Left Tree Value, 112. Path Sum
 
 June 06, 2023  4h
 
@@ -32,7 +32,7 @@ class Solution:
         return self.result
 
     def traversal(self, node, depth):   #depth记录当前深度
-        if not node.left and not node.right:    #终止条件,到达叶子结点
+        if not node.left and not node.right:    #确定终止条件,到达叶子结点
             if depth > self.max_depth:
                 self.max_depth = depth      #更新最大深度
                 self.result = node.val      #最大深度最左面的数值
@@ -69,13 +69,108 @@ class Solution:
 ```
 
 
+## 112. Path Sum
+[leetcode](https://leetcode.com/problems/path-sum/)\
+路径总和，优先掌握递归法，回溯的过程。\
+本题不涉及中节点的处理逻辑，任何遍历顺序都是可以的。
+```python
+# ways 1: recursion+回溯
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if root is None:
+            return False
+        return self.traversal(root, targetSum-root.val)
+    
+    def traversal(self, cur:TreeNode, count: int)->bool:
+        #确定终止条件
+        #遇到叶子节点，并且计数为0
+        if not cur.left and not cur.right and count == 0: 
+            return True
+        #遇到叶子节点，且没有找到合适的边
+        if not cur.left and not cur.right:
+            return False
 
-## 112
-路径总和，优先掌握递归法，回溯的过程。
+        if cur.left:    #左
+            count -= cur.left.val
+            if self.traversal(cur.left, count): # 递归，处理节点
+                return True
+            count += cur.left.val # 回溯，撤销处理结果
+        if cur.right: # 右
+            count -= cur.right.val
+            if self.traversal(cur.right, count): # 递归，处理节点
+                return True
+            count += cur.right.val # 回溯，撤销处理结果
+        return False
+```
+```python
+# ways 1: recursion+回溯 simpler version
+class Solution:
+    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
+        if not root:
+            return False
+        if not root.left and not root.right and sum == root.val:
+            return True
+        return self.hasPathSum(root.left, sum - root.val) or self.hasPathSum(root.right, sum - root.val)
+```
 
-#### 113
+#### 113. Path Sum II
+[leetcode](https://leetcode.com/problems/path-sum-ii/)\
+```python
+# ways 1: recursion+回溯
+class Solution:
+    def __init__(self):
+        self.result = []
+        self.path = []
 
+    def traversal(self, cur, count):
+        if not cur.left and not cur.right and count == 0:
+            self.result.append(self.path[:])
+            return
+        if not cur.left and not cur.right:
+            return
 
+        if cur.left:    #left(空节点不遍历）
+            self.path.append(cur.left.val)
+            count -= cur.left.val
+            self.traversal(cur.left, count) # 递归
+            count += cur.left.val # 回溯
+            self.path.pop() # 回溯
+        if cur.right: #right （空节点不遍历）
+            self.path.append(cur.right.val) 
+            count -= cur.right.val
+            self.traversal(cur.right, count) # 递归
+            count += cur.right.val # 回溯
+            self.path.pop() # 回溯
+        return
+
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        self.result.clear()
+        self.path.clear()
+        if not root:
+            return self.result
+        self.path.append(root.val)  # 把根节点放进路径
+        self.traversal(root, targetSum - root.val)
+        return  self.result
+```
+```python
+# ways 1: recursion+回溯 simpler version
+class Solution:
+    def pathSum(self, root: TreeNode, targetSum: int) -> List[List[int]]:
+        
+        result = []
+        self.traversal(root, targetSum, [], result)
+        return result
+    def traversal(self,node, count, path, result):
+            if not node:
+                return
+            path.append(node.val)
+            count -= node.val
+            if not node.left and not node.right and count == 0:
+                result.append(list(path))
+            self.traversal(node.left, count, path, result)
+            self.traversal(node.right, count, path, result)
+            path.pop()
+```
 
 
 ## 106
